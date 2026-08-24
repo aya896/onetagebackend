@@ -11,7 +11,6 @@ class SocialLinkSerializer(serializers.ModelSerializer):
         fields = ["platform", "url"]
 
 
-
 class NFCProfileSerializer(serializers.ModelSerializer):
 
     social_links = SocialLinkSerializer(
@@ -24,11 +23,9 @@ class NFCProfileSerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
-
     class Meta:
         model = NFCProfile
         fields = "__all__"
-
 
 
 class ActivateBraceletSerializer(serializers.Serializer):
@@ -68,5 +65,7 @@ class ActivateBraceletSerializer(serializers.Serializer):
         allow_blank=True
     )
 
-
-    
+    profile_image = serializers.ImageField(
+        required=False,
+        allow_null=True
+    )

@@ -1,4 +1,7 @@
+from decimal import Decimal
+
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Order
 from .serializers import OrderSerializer
@@ -7,17 +10,37 @@ from bracelets.models import OwnedBracelet
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(
+            user=self.request.user
+        )
+
+    def perform_create(self, serializer):
+
+        order = serializer.save(
+            user=self.request.user
+        )
+
+        total = Decimal("0.00")
+
+        for item in order.items.all():
+            total += item.total_price
+
+        order.total_price = total
+        order.save()
 
     def perform_update(self, serializer):
 
-        old_order = self.get_object()
+        old_status = self.get_object().status
 
         order = serializer.save()
 
         if (
-            old_order.status != "CONFIRMED"
+            old_status != "CONFIRMED"
             and order.status == "CONFIRMED"
         ):
 
@@ -29,5 +52,5 @@ class OrderViewSet(viewsets.ModelViewSet):
                     bead=item.bead,
                     color=item.color,
                     disk=item.disk,
-                    engraving=item.engraving
+                    engraving=item.engraving,
                 )
