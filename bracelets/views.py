@@ -1,6 +1,6 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from .models import Bracelet
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 from .models import Bracelet, OwnedBracelet
 from .serializers import (
     BraceletSerializer,
@@ -8,16 +8,21 @@ from .serializers import (
 )
 
 
-class BraceletListCreateView(generics.ListCreateAPIView):
+class BraceletListView(generics.ListAPIView):
     queryset = Bracelet.objects.all()
     serializer_class = BraceletSerializer
+    permission_classes = [AllowAny]
 
-class OwnedBraceletListCreateView(generics.ListCreateAPIView):
-    queryset = OwnedBracelet.objects.all()
+
+class OwnedBraceletCreateView(generics.CreateAPIView):
     serializer_class = OwnedBraceletSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class OwnedBraceletListView(generics.ListAPIView):
-
     serializer_class = OwnedBraceletSerializer
     permission_classes = [IsAuthenticated]
 
