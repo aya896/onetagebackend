@@ -32,25 +32,25 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         order.total_price = total
         order.save()
+def perform_update(self, serializer):
 
-    def perform_update(self, serializer):
+    old_status = self.get_object().status
 
-        old_status = self.get_object().status
+    order = serializer.save()
 
-        order = serializer.save()
+    if (
+        old_status != "CONFIRMED"
+        and order.status == "CONFIRMED"
+    ):
 
-        if (
-            old_status != "CONFIRMED"
-            and order.status == "CONFIRMED"
-        ):
+        for item in order.items.all():
 
-            for item in order.items.all():
-
-                OwnedBracelet.objects.create(
-                    user=order.user,
-                    bracelet=item.bracelet,
-                    bead=item.bead,
-                    color=item.color,
-                    disk=item.disk,
-                    engraving=item.engraving,
-                )
+            OwnedBracelet.objects.create(
+                user=order.user,
+                bracelet=item.bracelet,
+                bead=item.bead,
+                color=item.color,
+                disk=item.disk,
+                configuration=item.configuration,
+                engraving=item.engraving
+            )

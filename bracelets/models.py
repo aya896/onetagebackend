@@ -46,6 +46,11 @@ class OwnedBracelet(models.Model):
         on_delete=models.CASCADE
     )
 
+    configuration = models.JSONField(
+        default=dict,
+        blank=True
+    )
+
     engraving = models.CharField(
         max_length=100,
         blank=True
@@ -59,9 +64,13 @@ class OwnedBracelet(models.Model):
         db_index=True
     )
 
-    activated = models.BooleanField(default=False)
+    activated = models.BooleanField(
+        default=False
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
         return f"{self.user.username} - {self.bracelet.name}"

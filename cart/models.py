@@ -20,6 +20,8 @@ class CartItem(models.Model):
         on_delete=models.CASCADE
     )
 
+    # Kept for compatibility with the existing project.
+    # The complete personalized configuration is stored below.
     bead = models.ForeignKey(
         Bead,
         on_delete=models.CASCADE
@@ -33,6 +35,12 @@ class CartItem(models.Model):
     disk = models.ForeignKey(
         Disk,
         on_delete=models.CASCADE
+    )
+
+    # Complete bracelet customization
+    configuration = models.JSONField(
+        default=dict,
+        blank=True
     )
 
     engraving = models.CharField(
